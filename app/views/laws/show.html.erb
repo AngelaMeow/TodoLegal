@@ -7,32 +7,71 @@ function onIndexElementClicked(section_id) {
 }
 </script>
 
-<div class="container" data-spy="scroll" data-target="#myScrollspy" style="background-color: #FFF !important;">
+<div class="container" data-spy="scroll" data-target="#myScrollspy">
   <%= render 'law_header' %>
 
-  <div class="container-fluid" style="padding-top:60">
-    <%= render 'navbar_subbar' %>
-      
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="articulos" role="tabpanel" aria-labelledby="articulos-tab">
-        <%= render 'content' %>
-      </div>
-      <div class="tab-pane fade show" id="indice" role="tabpanel" aria-labelledby="indice-tab">
-        <%= render 'indice' %>
-      </div>
-      <div class="tab-pane fade show" id="modifications" role="tabpanel" aria-labelledby="modifications-tab">
-        <%= render 'modifications_tab' %>
-      </div>
-      <div class="tab-pane fade show" id="related" role="tabpanel" aria-labelledby="related-tab">
-        <%= render 'related_tab' %>
-      </div>
+  <div class="row">
+  <div class="col-12 col-sm-8 col-lg-9">
+    <div class="container-fluid container--article" style="padding-top:60">
+      <%= render 'navbar_subbar' %>
+        
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="articulos" role="tabpanel" aria-labelledby="articulos-tab">
+          <%= render 'content' %>
+        </div>
+        <div class="tab-pane fade show" id="indice" role="tabpanel" aria-labelledby="indice-tab">
+          <%= render 'indice' %>
+        </div>
+        <div class="tab-pane fade show" id="modifications" role="tabpanel" aria-labelledby="modifications-tab">
+          <%= render 'modifications_tab' %>
+        </div>
+        <div class="tab-pane fade show" id="related" role="tabpanel" aria-labelledby="related-tab">
+          <%= render 'related_tab' %>
+        </div>
+    </div>
+    </div>
+
+    <div class="col-12 col-sm-4 col-lg-3">
+       
+        <i class="fas fa-link subbar-icon" data-toggle="tab" href="#related"></i>
+              Relacionados
+
+
+        <% if @laws_array %>
+            <div class="row">
+              <% i = 0 %>
+              <% @laws_array.each do |law| %>
+                <% i+=1 %>
+                <div class="collapsable-law-cards col-12" style="display:<%= i>6 ? 'none' : 'block' %>">
+                  <div class="card card-body h-100" style="padding:0px">
+                    <a class="" href="<%= law_path(law) %>" style="padding:20px">
+                      <p style="font-size: 15px">
+                        <% law.materia_names.each do |materia_name| %>
+                          <span class="badge badge-light badge-secondary"><%= materia_name %></span>
+                        <% end %>
+                      </p>
+                      <h5 class="card-title"><%= law.name %></h5>
+                      <p class="primaryinfo">[<%= law.creation_number %>]</p>
+                      <p class="primaryinfo"><%= law.articles.count %> artículos</p>
+                    </a>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <br>
+
+            <% if @laws_array.size > 0 %>
+              <hr>
+            <% end %>
+          <% end %>
     </div>
 
     <div class="wrapper">
       <%= render 'sidebar_indice' %>
     </div>
+    </div>
     <% if !@user_can_access_law %>
-      <p>Crea una cuenta para acceder a esta ley</p>
       <!-- Modal -->
       <div class="modal fade" data-keyboard="false" data-backdrop="static" id="modalCreateBasicAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
