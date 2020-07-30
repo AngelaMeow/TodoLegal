@@ -51,6 +51,10 @@ p.body {
     margin: 1rem auto;
 }
 
+.container--article {
+    background: white;
+}
+
 /* General styles for cards */
 
 .card--dark-100 {
