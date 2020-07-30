@@ -3,9 +3,67 @@
   .index-element {
     font-family: 'Merriweather', serif;
   }
+
+  .btn-link {
+    text-align: left;
+  }
 </style>
 
 <div class="container" style="">
+
+  <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0 d-inline">
+                    <button class="btn btn-link">
+                      Libro 1
+                      <br> Lorem Ipsum 
+                    </button>
+                 </h5>
+                 <a href="#" class="my-2 float-right" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                 <i class="fa fa-chevron-down"></i>
+                 </a>
+            </div>
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body" id="child1">
+                    <div class="card">
+                        <div class="card-header">
+                            <a href="#">
+                            Título 1
+                            <br> Lorem Ipsum 
+                            </a>
+
+                          <a href="#" class="my-2 float-right" data-toggle="collapse" data-target="#collapseOneA">
+                          <i class="fa fa-chevron-down"></i>
+                          </a>
+                        </div>
+                        <div class="card-body collapse" data-parent="#child1" id="collapseOneA">
+                            Capitulo 1  
+                            <br> Lorem Ipsum 
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <a href="#">
+                            Título 2  
+                            <br> Lorem Ipsum </a>
+                            <a href="#" class="my-2 float-right" data-toggle="collapse" data-target="#collapseOneB">
+                            <i class="fa fa-chevron-down"></i>
+                            </a>
+                        </div>
+                        <div class="card-body collapse" data-parent="#child1" id="collapseOneB">
+                            Capitulo 2  
+                            <br> Lorem Ipsum 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+    </div>
+
+
   <table class="list-unstyled components">
     <% if @has_articles_only %>
       <% i = 0 %>
