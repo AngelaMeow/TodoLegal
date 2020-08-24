@@ -64,6 +64,19 @@ class ApplicationController < ActionController::Base
     end
     return false
   end
+
+  def titles_and_article_results
+    if @laws.size == 1
+      @titles_result = number_with_delimiter(@laws.size, :delimiter => ',').to_s + ' resultado en títulos'
+    else
+      @titles_result = number_with_delimiter(@laws.size, :delimiter => ',').to_s + ' resultados en títulos'
+    end
+    if @result_count == 1
+      @articles_result = number_with_delimiter(@result_count - @laws.size, :delimiter => ',').to_s + ' resultado en artículos'
+    else
+      @articles_result = number_with_delimiter(@result_count - @laws.size, :delimiter => ',').to_s + ' resultados en artículos'
+    end
+  end
   
 protected
   

@@ -54,6 +54,7 @@ class TagsController < ApplicationController
       elsif @legal_documents_count == 1
         @result_info_text += " en " + @legal_documents_count.to_s + " documento legal."
       end
+      titles_and_article_results
     else
       @laws = @tag.laws
         .left_joins(:articles)
