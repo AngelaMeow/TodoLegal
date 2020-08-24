@@ -2,6 +2,7 @@ class LawsController < ApplicationController
   layout 'law'
   layout 'application', only: [:index]
   before_action :set_law, only: [:show, :edit, :update, :destroy]
+  before_action :set_materias, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_admin!, only: [:index, :new, :edit, :create, :update, :destroy]
 
   # GET /laws
@@ -136,7 +137,7 @@ class LawsController < ApplicationController
     end
 
     @user_can_edit_law = current_user_is_admin
-    @user_can_access_law = user_can_access_law @law
+    @user_can_access_law = user_can_access_law @law, current_user
     if !@user_can_access_law
       @stream = @stream.take(5)
     end
@@ -156,10 +157,10 @@ class LawsController < ApplicationController
       @article = @law.articles.first
     end
 
-    @law_materias = []
-    materia_tag_type = TagType.find_by_name("materia")
-    @all_materias = Tag.where(tag_type: materia_tag_type)
-    @law_materias = LawTag.where(law_id: @law.id, tag_id: @all_materias)
+    # @law_materias = []
+    # materia_tag_type = TagType.find_by_name("materia")
+    # @all_materias = Tag.where(tag_type: materia_tag_type)
+    # @law_materias = LawTag.where(law_id: @law.id, tag_id: @all_materias)
 
     creacion_tag_type = TagType.find_by_name("creacion")
     @all_creacions = Tag.where(tag_type: creacion_tag_type)
@@ -213,34 +214,43 @@ class LawsController < ApplicationController
       @law = Law.find(params[:id])
     end
 
+    def set_materias
+      @law_materias = []
+      materia_tag_type = TagType.find_by_name("materia")
+      @all_materias = Tag.where(tag_type: materia_tag_type)
+      @law_materias = LawTag.where(law_id: @law.id, tag_id: @all_materias)
+
+      @tag = Tag.find_by(id: @law_materias[0].tag_id)
+      lawTags = LawTag.where(tag_id: @tag.id)
+      
+      @laws_array = []
+      counter = 0
+      while counter < lawTags.size
+        @laws_array[counter] = Law.find_by(id: lawTags[counter].law_id)
+        counter+=1
+      end
+
+    end
+
     # Never trust parameters from the scary internet, only allow the white list through.
     def law_params
       params.require(:law).permit(:name, :modifications, :creation_number)
     end
 
-    def user_can_access_law law
+    def user_can_access_law law, user
       law_access = law.law_access
-      if current_user
-        return true
+      if law_access
+        if law_access.name == "Pro"
+          if !user_is_pro user
+            return false
+          end
+        end
+        if law_access.name == "Básica"
+          if !current_user
+            return false
+          end
+        end
       end
-      if !law_access
-        return true
-      end
-      return law_access.name == "Todos"
-      
-      #law_access = law.law_access
-      #if law_access
-      #  if law_access.name == "Pro"
-      #    if !current_user_is_pro
-      #      return false
-      #    end
-      #  end
-      #  if law_access.name == "Básica"
-      #    if !current_user
-      #      return false
-      #    end
-      #  end
-      #end
-      #return true
+      return true
     end
 end

@@ -4,11 +4,6 @@ class HomeController < ApplicationController
   require 'set'
   
   def index
-    if is_redirect_pending
-      handle_redirect
-      return
-    end
-
     @tags = Tag.where(tag_type: TagType.find_by_name("materia"))
 
     covid_drive_data_json_path = 'public/covid_drive_data.json'
@@ -78,11 +73,21 @@ class HomeController < ApplicationController
       else
         @result_info_text = number_with_delimiter(@result_count, :delimiter => ',').to_s + ' resultados encontrados'
       end
-      if @legal_documents_count > 1
-        @result_info_text += " en " + @legal_documents_count.to_s + " documentos legales."
-      elsif @legal_documents_count == 1
-        @result_info_text += " en " + @legal_documents_count.to_s + " documento legal."
-      end
+      # if @legal_documents_count > 1
+      #   @result_info_text += " en " + @legal_documents_count.to_s + " documentos legales."
+      # elsif @legal_documents_count == 1
+      #   @result_info_text += " en " + @legal_documents_count.to_s + " documento legal."
+      # end
+      if @laws.size == 1
+        @titles_result = number_with_delimiter(@laws.size, :delimiter => ',').to_s + ' resultado en títulos'
+      else
+        @titles_result = number_with_delimiter(@laws.size, :delimiter => ',').to_s + ' resultados en títulos'
+      end 
+      if @result_count == 1
+        @articles_result = number_with_delimiter(@result_count - @laws.size, :delimiter => ',').to_s + ' resultado en artículos'
+      else
+        @articles_result = number_with_delimiter(@result_count - @laws.size, :delimiter => ',').to_s + ' resultados en artículos'
+      end 
     end
   end
 
@@ -93,10 +98,28 @@ class HomeController < ApplicationController
   end
 
   def pricing
+    @is_onboarding = params[:is_onboarding]
+    @pricing_onboarding = params[:pricing_onboarding]
+    @go_to_law = params[:go_to_law]
+    @activate_pro_account = params[:activate_pro_account]
+    @user_just_registered = params[:user_just_registered]
+
+    if @pricing_onboarding
+      @select_basic_plan_path = "/users/sign_up"
+    elsif !@go_to_law.blank?
+      @select_basic_plan_path = Law.find_by_id(@go_to_law)
+    else
+      @select_basic_plan_path = root_path
+    end
+
+    if @pricing_onboarding
+      @select_pro_plan_path = "/users/sign_up"
+    else
+      @select_pro_plan_path = checkout_path
+    end
   end
   
   def invite_friends
-    # @is_onboarding = params[:is_onboarding]
   end
   
   def drive_search
@@ -131,19 +154,17 @@ class HomeController < ApplicationController
       end
       return
     end
-    if !params["email1"].blank?
-      SubscriptionsMailer.refer(current_user, params["email1"]).deliver
-    end
-    if !params["email2"].blank?
-      SubscriptionsMailer.refer(current_user, params["email2"]).deliver
-    end
-    if is_redirect_pending
-      handle_redirect
-      return
-    else
-      respond_to do |format|
-        format.html { redirect_to root_path, notice: I18n.t(:referal_sent) }
+    if ENV['GMAIL_USERNAME']
+      if !params["email1"].blank?
+        SubscriptionsMailer.refer(current_user, params["email1"]).deliver
       end
+      if !params["email2"].blank?
+        SubscriptionsMailer.refer(current_user, params["email2"]).deliver
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to root_path, notice: I18n.t(:referal_sent) }
     end
   end
 
